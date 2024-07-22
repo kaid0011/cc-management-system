@@ -10,12 +10,16 @@
                 <span class="html_detail">{{ invoiceDetails.invoice_no }}</span>
               </div>
               <div class="html_detailsRow">
-                <span class="html_detailLabel">Date:</span>
-                <span class="html_detail">{{ formattedDate }}</span>
+                <span class="html_detailLabel">Invoice Date:</span>
+                <span class="html_detail">{{ formattedInvoiceDate }}</span>
               </div>
               <div class="html_detailsRow">
-                <span class="html_detailLabel">Time:</span>
-                <span class="html_detail">{{ formattedTime }}</span>
+                <span class="html_detailLabel">Order No:</span>
+                <span class="html_detail">{{ invoiceDetails.order_no }}</span>
+              </div>
+              <div class="html_detailsRow">
+                <span class="html_detailLabel">Order Date:</span>
+                <span class="html_detail">{{ formattedOrderDate }}</span>
               </div>
               <div class="html_detailsRow">
                 <span class="html_detailLabel">Ready By:</span>
@@ -55,7 +59,7 @@
   import { ref, onMounted } from "vue";
   import { useRoute, useRouter } from "vue-router";
   import {
-    fetchInvoiceDetails,
+    fetchInvoiceDetailsByInvoiceNo,
     fetchTransactionsByInvoiceNo,
   } from "@/../supabase/api/invoices.js";
   
@@ -66,8 +70,8 @@
   const transactions = ref([]);
   const isDataLoaded = ref(false);
   
-  const formattedDate = ref("");
-  const formattedTime = ref("");
+  const formattedOrderDate = ref("");
+  const formattedInvoiceDate = ref("");
   const formattedReadyBy = ref("");
   
   const formatDate = (date) => {
@@ -91,15 +95,15 @@
       const invoiceNo = route.params.invoice_no;
   
       const [invoiceData, transactionsData] = await Promise.all([
-        fetchInvoiceDetails(invoiceNo),
+        fetchInvoiceDetailsByInvoiceNo(invoiceNo),
         fetchTransactionsByInvoiceNo(invoiceNo)
       ]);
   
       invoiceDetails.value = invoiceData;
       transactions.value = transactionsData;
   
-      formattedDate.value = formatDate(new Date(invoiceDetails.value.date_time));
-      formattedTime.value = formatTime(new Date(invoiceDetails.value.date_time));
+      formattedOrderDate.value = formatDate(new Date(invoiceDetails.value.order_date_time));
+      formattedInvoiceDate.value = formatDate(new Date(invoiceDetails.value.invoice_date_time));
       formattedReadyBy.value = formatDate(new Date(invoiceDetails.value.ready_by));
   
       isDataLoaded.value = true;

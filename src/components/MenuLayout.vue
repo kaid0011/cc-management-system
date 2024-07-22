@@ -97,7 +97,7 @@ function navigate(path) {
 }
 
 const links1 = [
-  { icon: "dashboard", text: "POS", path: "/" },
+  { icon: "dashboard", text: "Dashboard", path: "/" },
   { icon: "whatshot", text: "Item Management", path: "/items" },
   { icon: "subscriptions", text: "Invoice Management", path: "/invoices" },
 ];
