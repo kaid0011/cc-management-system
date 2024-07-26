@@ -11,9 +11,12 @@
   "dependencies": {
     "@quasar/extras": "^1.16.12",
     "@supabase/supabase-js": "^2.44.3",
+    "html2canvas": "^1.4.1",
+    "print-js": "^1.6.0",
     "quasar": "^2.16.6",
     "vue": "^3.4.29",
-    "vue-router": "^4.4.0"
+    "vue-router": "^4.4.0",
+    "vue3-print-nb": "^0.1.4"
   },
   "devDependencies": {
     "@quasar/vite-plugin": "^1.7.0",

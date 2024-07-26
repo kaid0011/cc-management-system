@@ -84,3 +84,56 @@ button:focus-visible {
 .my-font {
   font-family: 'font';
 }
+
+/* Font: Gabarito */
+@font-face {
+  font-family: inter;
+  src: url(@/assets/fonts/inter.ttf);
+}
+
+.invoice-container {
+  font-family: 'inter';
+}
+
+.invoice-container .text-caption{
+  line-height: 1rem !important;
+}
+
+.text-tiny {
+  font-size: 10px;
+  line-height: 0.6rem;
+}
+
+.highlighted {
+  background-color: yellow !important;
+}
+
+.invoice-management {
+  padding: 20px;
+}
+.q-card-section {
+  max-height: 60vh;
+  overflow-y: auto;
+}
+.pending-input {
+  width: 200px !important;
+  font-weight: 900 !important;
+}
+.pending-customer {
+  width: 600px !important;
+  font-weight: 900 !important;
+}
+.dialogs {
+  background-color: #e9e9e9;
+}
+.highlighted {
+  background-color: yellow !important;
+  transition: background-color 2s ease-out;
+}
+
+.fade-enter-active, .fade-leave-active {
+  transition: opacity 2s;
+}
+.fade-enter, .fade-leave-to /* .fade-leave-active in <2.1.8 */ {
+  opacity: 0;
+}

@@ -1,0 +1,114 @@
+:root {
+  --primary: #1C768F;
+  --secondary: #FA991C;
+  --accent: #032539;
+  --dark: #1D1D1D;
+  --positive: #21BA45;
+  --negative: #C10015;
+  --info: #31CCEC;
+  --warning: #F2C037;
+}
+
+.invoice-container {
+  max-width: 800px;
+  margin: 0 auto;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+.bg-primary {
+  background-color: var(--primary) !important;
+  color: #fff !important;
+}
+
+.text-white {
+  color: #fff !important;
+}
+
+.text-h6 {
+  font-size: 1.25rem;
+  font-weight: 500;
+}
+
+.text-uppercase {
+  text-transform: uppercase;
+}
+
+.text-weight-bolder {
+  font-weight: bolder;
+}
+
+.text-body1 {
+  font-size: 1rem;
+}
+
+.q-pa-md {
+  padding: 16px !important;
+}
+
+.q-mb-md {
+  margin-bottom: 16px !important;
+}
+
+.q-mt-md {
+  margin-top: 16px !important;
+}
+
+.q-mt-xl {
+  margin-top: 32px !important;
+}
+
+.q-gutter-y-md > * {
+  margin-top: 16px !important;
+  margin-bottom: 16px !important;
+}
+
+.q-pa-sm {
+  padding: 8px !important;
+}
+
+.q-mb-sm {
+  margin-bottom: 8px !important;
+}
+
+.q-pl-md {
+  padding-left: 16px !important;
+}
+
+.q-my-none {
+  margin-top: 0 !important;
+  margin-bottom: 0 !important;
+}
+
+.text-caption {
+  font-size: 0.875rem;
+}
+
+.text-left {
+  text-align: left !important;
+}
+
+.text-right {
+  text-align: right !important;
+}
+
+.row {
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.column {
+  display: flex;
+  flex-direction: column;
+}
+
+.justify-between {
+  justify-content: space-between !important;
+}
+
+.justify-end {
+  justify-content: flex-end !important;
+}
+
+.banner {
+  background-color: #1C768F !important;
+}
