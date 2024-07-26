@@ -1,6 +1,7 @@
 <template>
   <q-page class="q-pa-md">
     <q-btn class="bg-primary text-white q-mb-md" @click="printInvoice" label="Print Invoice" />
+    <q-btn class="bg-secondary text-white q-mb-md q-ml-sm" @click="downloadInvoice" label="Download PDF" />
     <q-card v-if="isDataLoaded" class="invoice-container" ref="invoiceContainer">
       <q-card-section>
         <div class="banner bg-primary text-white q-pa-md">
@@ -249,6 +250,7 @@
 import { ref, onMounted, nextTick, computed } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import html2canvas from "html2canvas";
+import jsPDF from 'jspdf';
 import {
   fetchInvoiceDetailsByInvoiceNo,
   fetchTransactionsByInvoiceNo,
@@ -390,6 +392,38 @@ const printInvoice = async () => {
   imgWindow.focus();
   imgWindow.print();
   imgWindow.close();
+};
+
+const downloadInvoice = async () => {
+  const invoiceElement = document.querySelector('.invoice-container');
+  const canvas = await html2canvas(invoiceElement);
+  const imgData = canvas.toDataURL('image/png');
+  const pdf = new jsPDF('p', 'mm', 'a4');
+  const imgWidth = 210; // A4 width in mm
+  const pageHeight = 297; // A4 height in mm
+  const imgHeight = (canvas.height * imgWidth) / canvas.width;
+  let heightLeft = imgHeight;
+  let position = 0;
+
+  pdf.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight);
+  heightLeft -= pageHeight;
+
+  while (heightLeft >= 0) {
+    position = heightLeft - imgHeight;
+    pdf.addPage();
+    pdf.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight);
+    heightLeft -= pageHeight;
+  }
+
+  const currentDateTime = new Date();
+  const year = String(currentDateTime.getFullYear()).slice(-2);
+  const month = String(currentDateTime.getMonth() + 1).padStart(2, '0');
+  const day = String(currentDateTime.getDate()).padStart(2, '0');
+  const hours = String(currentDateTime.getHours()).padStart(2, '0');
+  const minutes = String(currentDateTime.getMinutes()).padStart(2, '0');
+  const fileName = `invoice-${year}${month}${day}${hours}${minutes}.pdf`;
+
+  pdf.save(fileName);
 };
 </script>
 
