@@ -1,0 +1,145 @@
+:root {
+  --red-light: #E5484D;
+  --pink-light: #E93D82;
+  --orange-light: #F76808;
+  --yellow-light: #F5D90A;
+  --green-light: #46A758;
+  --cyan-light: #35b0d5;
+  --blue-light: #0090FF;
+  --purple-light: #D6409F;
+  --violet-light: #8E4EC6;
+  
+  --red-dark: #822025;
+  --pink-dark: #801D45;
+  --orange-dark: #763205;
+  --yellow-dark: #594A05;
+  --green-dark: #46A758;
+  --cyan-dark: #064B6B;
+  --blue-dark: #0A4481;
+  --purple-dark: #7A1D5A;
+  --violet-dark: #5F2D84;
+
+  --primary: #D6409F;
+  --secondary: #26A69A;
+  --accent: #9C27B0;
+
+  --positive: #21BA45;
+  --negative: #C10015;
+  --info: #31CCEC;
+  --warning: #F2C037;
+
+  --primary-dark: #1565C0;
+  --secondary-dark: #1E8E78;
+  --accent-dark: #7B1FA2;
+
+  --positive-dark: #1B8E3E;
+  --negative-dark: #A30013;
+  --info-dark: #2587A5;
+  --warning-dark: #C4901E;
+
+  --background-light: #f7f7f7;
+  --background-a-light: #F1F3F5;
+  --background-b-light: #E6E8EB;
+  --background-c-light: #D7DBDF;
+  --background-d-light: #889096;
+  --background-e-light: #687076;
+  --placeholder-light: #6c6c6c;
+  --text-light: #222222;
+  --text-a-light: #2b7a78;
+  --button-bg-light: #3aafa9;
+  --button-text-light: #090909;
+  --button-hover-bg-light: #2b7a78;
+  --button-hover-text-light: #e5e5e5;
+  --card-bg-light: #def2f1;
+  --card-text-light: #090909;
+  --input-bg-light: #acdddb;
+  --input-text-light: #090909;
+  --toolbar-bg-light: #5F2D84;
+  --toolbar-text-light: #f7f7f7;
+
+  --background-dark: #1c1c1c;
+  --background-a-dark: #202425;
+  --background-b-dark: #2E2E2E;
+  --background-c-dark: #3A3F42;
+  --background-d-dark: #697177;
+  --background-e-dark: #9BA1A6;
+  --placeholder-dark: #737373;
+  --text-dark: #f9f9f9;
+  --text-a-dark: var(--color-teal-2);;
+  --button-bg-dark: #2b7a78;
+  --button-text-dark: #e5e5e5;
+  --button-hover-bg-dark: #3aafa9;
+  --button-hover-text-dark: #090909;
+  --card-bg-dark: #17252a;
+  --card-text-dark: #3aafa9;
+  --input-bg-dark: var(--color-teal-10);
+  --input-text-dark: #e5e5e5;
+  --toolbar-bg-dark: #301A3A;
+  --toolbar-text-dark: #f7f7f7;
+}
+
+[data-theme='light'] {
+  --background: var(--background-light);
+  --background-a: var(--background-a-light);
+  --background-b: var(--background-b-light);
+  --background-c: var(--background-c-light);
+  --background-d: var(--background-d-light);
+  --background-e: var(--background-e-light);
+  --placeholder: var(--placeholder-light);
+  --text: var(--text-light);
+  --text-a: var(--text-a-light);
+  --button-bg: var(--button-bg-light);
+  --button-text: var(--button-text-light);
+  --button-hover-bg: var(--button-hover-bg-light);
+  --button-hover-text: var(--button-hover-text-light);
+  --card-bg: var(--card-bg-light);
+  --card-text: var(--card-text-light);
+  --input-bg: var(--input-bg-light);
+  --input-text: var(--input-text-light);
+  --toolbar-bg: var(--toolbar-bg-light);
+  --toolbar-text: var(--toolbar-text-light);
+  --table-bg: var(--background-a-light);
+
+  --red: var(--red-light);
+  --pink: var(--pink-light);
+  --orange: var(--orange-light);
+  --yellow: var(--yellow-light);
+  --green: var(--green-light);
+  --cyan: var(--cyan-light);
+  --blue: var(--blue-light);
+  --purple: var(--purple-light);
+  --violet: var(--violet-light);
+}
+
+[data-theme='dark'] {
+  --background: var(--background-dark);
+  --background-a: var(--background-a-dark);
+  --background-b: var(--background-b-dark);
+  --background-c: var(--background-c-dark);
+  --background-d: var(--background-d-dark);
+  --background-e: var(--background-e-dark);
+  --placeholder: var(--placeholder-dark);
+  --text: var(--text-dark);
+  --text-a: var(--text-a-dark);
+  --button-bg: var(--button-bg-dark);
+  --button-text: var(--button-text-dark);
+  --button-hover-bg: var(--button-hover-bg-dark);
+  --button-hover-text: var(--button-hover-text-dark);
+  --card-bg: var(--card-bg-dark);
+  --card-text: var(--card-text-dark);
+  --input-bg: var(--input-bg-dark);
+  --input-text: var(--input-text-dark);
+  --toolbar-bg: var(--toolbar-bg-dark);
+  --toolbar-text: var(--toolbar-text-dark);
+  --table-bg: var(--background-b-dark);
+
+  --red: var(--red-dark);
+  --pink: var(--pink-dark);
+  --orange: var(--orange-dark);
+  --yellow: var(--yellow-dark);
+  --green: var(--green-dark);
+  --cyan: var(--cyan-dark);
+  --blue: var(--blue-dark);
+  --purple: var(--purple-dark);
+  --violet: var(--violet-dark);
+}

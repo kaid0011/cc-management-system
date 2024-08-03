@@ -1,72 +1,70 @@
+// File path: supabase/api/invoices.js
+
 import { supabase } from '../config.js';
 
-export async function fetchAllInvoices() {
-  try {
-    const { data, error } = await supabase.from('invoices').select('*');
-    if (error) {
-      throw error;
-    }
-    return data;
-  } catch (error) {
-    console.error('Error fetching invoices:', error.message);
-    throw error;
-  }
-}
-
-export async function fetchInvoiceDetails(orderNo) {
-  try {
-    let { data, error } = await supabase
-      .from('invoices')
-      .select('*')
-      .eq('order_no', orderNo)
-      .single();
-
-    if (error) {
-      if (error.code === 'PGRST116') {
-        throw new Error(`No invoice found with order_no: ${orderNo}`);
-      }
-      throw error;
-    }
-
-    return data;
-  } catch (error) {
-    console.error('Error fetching invoice details:', error.message);
-    throw error;
-  }
-}
-
-export async function fetchInvoiceDetailsByInvoiceNo(invoiceNo) {
-  try {
-    let { data, error } = await supabase
-      .from('invoices')
-      .select('*')
-      .eq('invoice_no', invoiceNo)
-      .single();
-
-    if (error) {
-      if (error.code === 'PGRST116') {
-        throw new Error(`No invoice found with invoice_no: ${invoice_no}`);
-      }
-      throw error;
-    }
-
-    return data;
-  } catch (error) {
-    console.error('Error fetching invoice details:', error.message);
-    throw error;
-  }
-}
-
-export async function fetchTransactionsByInvoiceId(invoiceId) {
+// Fetch all orders with related invoices
+export async function fetchAllOrders() {
   try {
     const { data, error } = await supabase
-      .from('transactions')
+      .from('orders_pos')
+      .select(`*`);
+
+    if (error) throw error;
+
+    return data;
+  } catch (error) {
+    console.error('Error fetching orders:', error.message);
+    throw error;
+  }
+}
+
+// Fetch all orders with related invoices
+export async function fetchAllInvoices() {
+  try {
+    const { data, error } = await supabase
+      .from('invoices')
+      .select(`*`);
+
+    if (error) throw error;
+
+    return data;
+  } catch (error) {
+    console.error('Error fetching orders:', error.message);
+    throw error;
+  }
+}
+
+// Fetch order details by order ID
+export async function fetchOrderDetails(orderId) {
+  try {
+    const { data, error } = await supabase
+      .from('orders_pos')
       .select('*')
-      .eq('invoice_id', invoiceId);
+      .eq('id', orderId)
+      .single();
 
     if (error) {
+      if (error.code === 'PGRST116') {
+        throw new Error(`No order found with order: ${orderId}`);
+      }
       throw error;
     }
+    return data;
+  } catch (error) {
+    console.error('Error fetching order details:', error.message);
+    throw error;
+  }
+}
+
+// Fetch transactions by order ID
+export async function fetchTransactionsByOrderId(orderId) {
+  try {
+    const { data, error } = await supabase
+      .from('transactions_pos')
+      .select('*')
+      .eq('order_id', orderId);
+
+    if (error) throw error;
 
     return data || [];
   } catch (error) {
@@ -75,131 +73,134 @@ export async function fetchTransactionsByInvoiceId(invoiceId) {
   }
 }
 
-export async function getNextInvoiceNo() {
+export async function fetchInstructionsByOrderId(orderId) {
   try {
     const { data, error } = await supabase
-      .from('invoices')
-      .select('invoice_no')
-      .order('invoice_no', { ascending: false })
-      .limit(1)
-      .single();
+      .from('instructions_pos')
+      .select('*')
+      .eq('order_id', orderId);
 
-    if (error && error.code !== 'PGRST116') { 
+    if (error) {
       throw error;
     }
 
-    let nextInvoiceNo = 1;
-    if (data && data.invoice_no) {
-      nextInvoiceNo = parseInt(data.invoice_no, 10) + 1;
-    }
-
-    return nextInvoiceNo.toString().padStart(8, '0');
+    return data;
   } catch (error) {
-    console.error('Error getting next invoice number:', error.message);
+    console.error('Error fetching instructions:', error);
     throw error;
   }
 }
 
-export async function updateInvoiceStatusAndDateById(invoiceId, status, invoiceDateTime, invoiceNo) {
+// Update order status and date by ID
+export async function updateOrderStatusAndDateById(orderId, status, dateTime) {
   try {
     const { data, error } = await supabase
-      .from('invoices')
-      .update({ status, invoice_date_time: invoiceDateTime, invoice_no: invoiceNo })
-      .eq('id', invoiceId);
+      .from('orders_pos')
+      .update({ status, order_date_time: dateTime })
+      .eq('id', orderId);
 
     if (error) throw error;
 
     return data;
   } catch (error) {
-    console.error('Error updating invoice status and date:', error);
+    console.error('Error updating order status and date:', error);
     throw error;
   }
 }
 
-export const updateInvoiceAndTransactionsInDatabase = async (invoice, transactions) => {
-  const { id, invoice_no, invoice_date_time, ready_by, status } = invoice;
-
-  const invoiceUpdate = {
-    invoice_no,
-    invoice_date_time,
-    ready_by,
-    status
-  };
-
+// Fetch customer details by order ID
+export async function fetchCustomerDetailsByOrderId(orderId) {
   try {
-    const { data: invoiceData, error: invoiceError } = await supabase
-      .from('invoices')
-      .update(invoiceUpdate)
-      .eq('id', id);
+    const { data, error } = await supabase
+      .from('customers')
+      .select('*')
+      .eq('order_id', orderId)
+      .single();
 
-    if (invoiceError) {
-      console.error('Error updating invoice:', invoiceError);
-      throw invoiceError;
-    }
-
-    if (transactions && transactions.length > 0) {
-      for (const transaction of transactions) {
-        const { id: transactionId, price } = transaction;
-
-        const transactionUpdate = {
-          price,
-        };
-
-        const { data: transactionData, error: transactionError } = await supabase
-          .from('transactions')
-          .update(transactionUpdate)
-          .eq('id', transactionId);
-
-        if (transactionError) {
-          console.error('Error updating transaction:', transactionError);
-          throw transactionError;
-        }
-      }
-    }
-
-    return { invoiceData, transactions };
-
+    if (error) throw error;
+    return data;
   } catch (error) {
-    console.error('Error updating invoice and transactions:', error);
+    console.error('Error fetching customer details:', error);
     throw error;
   }
-};
+}
 
-export async function fetchTransactionsByInvoiceNo(invoiceNo) {
+// Insert an invoice by order ID
+export async function insertInvoiceByOrderId(orderId) {
   try {
-    // Fetch the invoice details first to get its id
-    const { data: invoice } = await supabase
+    const { data, error } = await supabase
       .from('invoices')
-      .select('id')
+      .insert([{ order_id: orderId, invoice_date_time: new Date().toISOString() }])
+      .select();
+
+    if (error) throw error;
+
+    return data[0];
+  } catch (error) {
+    console.error('Error inserting invoice by order ID:', error.message);
+    throw error;
+  }
+}
+
+// Fetch invoice by order ID
+export async function fetchInvoiceByOrderId(orderId) {
+  try {
+    const { data, error } = await supabase
+      .from('invoices')
+      .select('*')
+      .eq('order_id', orderId)
+      .single();
+
+    if (error) throw error;
+
+    return data;
+  } catch (error) {
+    console.error('Error fetching invoice by order ID:', error.message);
+    throw error;
+  }
+}
+
+// Fetch details by invoice number
+export async function fetchDetailsByInvoiceNo(invoiceNo) {
+  try {
+    // Fetch the invoice with the given invoiceNo
+    const { data: invoice, error: invoiceError } = await supabase
+      .from('invoices')
+      .select('*')
       .eq('invoice_no', invoiceNo)
       .single();
 
-    if (!invoice) {
-      throw new Error(`Invoice with invoice_no ${invoiceNo} not found`);
-    }
+    if (invoiceError) throw invoiceError;
 
-    // Now fetch transactions using the invoice id
-    return await fetchTransactionsByInvoiceId(invoice.id);
-  } catch (error) {
-    console.error('Error fetching transactions by invoice no:', error);
-    throw error;
-  }
-}
-
-export async function fetchCustomerDetailsByInvoiceId(invoiceId) {
-  try {
-    let { data, error } = await supabase
-      .from("customers")
-      .select("*")
-      .eq("invoice_id", invoiceId)
+    // Fetch the order related to the invoice
+    const { data: order, error: orderError } = await supabase
+      .from('orders_pos')
+      .select('*')
+      .eq('id', invoice.order_id)
       .single();
 
-    if (error) {
-      throw error;
-    }
-    return data;
+    if (orderError) throw orderError;
+
+    // Fetch transactions related to the order
+    const { data: transactions, error: transactionsError } = await supabase
+      .from('transactions_pos')
+      .select('*')
+      .eq('order_id', order.id);
+
+    if (transactionsError) throw transactionsError;
+
+    // Fetch transactions related to the order
+    const { data: customer, error: customersError } = await supabase
+      .from('customers')
+      .select('*')
+      .eq('order_id', order.id);
+
+    if (customersError) throw customersError;
+
+    // Return the combined result
+    return { invoice, order, transactions, customer };
   } catch (error) {
-    console.error("Error fetching customer details:", error);
+    console.error('Error fetching details by invoice number:', error.message);
     throw error;
   }
 }

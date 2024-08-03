@@ -9,6 +9,8 @@ const routes = [
     {path: '/items', name: 'Item Management', component: () => import('@/views/ItemManagement.vue')},
     {path: '/invoices', name: 'Invoice Management', component: () => import('@/views/InvoiceList.vue')},
     {path: '/invoices/:invoice_no', name: 'View Invoice', component: () => import('@/views/InvoiceView.vue')},
+    {path: '/customers', name: 'Customer Management', component: () => import('@/views/CustomerManagement.vue')},
+    {path: '/customers/:id', name: 'View Customer', component: () => import('@/views/CustomerView.vue')}
 ]
 
 const router = createRouter({

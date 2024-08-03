@@ -16,6 +16,9 @@ import App from "./App.vue";
 const myApp = createApp(App);
 
 myApp.use(Quasar, {
+  config: {
+    dark: false /* look at QuasarConfOptions from the API card */,
+  },
   plugins: {
     Dialog,
     Notify,

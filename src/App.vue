@@ -1,51 +1,27 @@
 <template>
-  <q-layout view="hHh lpR fFf">
-    <MenuLayout />
-    <q-page-container class="app-page">
-      <q-page>
-        <router-view />
-      </q-page>
-    </q-page-container>
-  </q-layout>
+  <Auth v-if="!session" />
+  <!-- <Account v-else :session="session" /> -->
+  <MainLayout v-else :session="session" />
 </template>
 
 <script setup>
-// import { ref } from "vue";
-import MenuLayout from "@/components/MenuLayout.vue";
-// import { supabase } from "@/../supabase/config.js";
+import MainLayout from "@/layouts/MainLayout.vue";
+import { ref, onMounted } from 'vue'
+import { getSession, onAuthStateChange } from '@/../supabase/api/auth.js'
+import Auth from '@/views/Auth.vue'
+// import Account from '@/views/Account.vue'
 
-// const session = ref();
+const session = ref(null)
 
-// Uncomment if you need session-based logic
-// onMounted(() => {
-//   supabase.auth.getSession().then(({ data }) => {
-//     session.value = data.session;
-//   });
+onMounted(async () => {
+  session.value = await getSession()
 
-//   supabase.auth.onAuthStateChange((_, _session) => {
-//     session.value = _session;
-//   });
-// });
+  onAuthStateChange((_event, newSession) => {
+    session.value = newSession
+  })
+})
 </script>
 
 <style scoped>
-.app-page {
-  margin: 0;
-  padding: 0;
-  position: relative;
-  overflow: auto;
-  width: 100vw;
-  height: 100vh;
-}
-
-.app-page::before {
-  content: "";
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background-size: cover;
-  z-index: -1; /* Place the pseudo-element behind the content */
-}
+/* Add your styles here */
 </style>

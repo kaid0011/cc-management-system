@@ -1,10 +1,20 @@
 <template>
   <q-page class="q-pa-md">
-    <q-btn class="bg-primary text-white q-mb-md" @click="printInvoice" label="Print Invoice" />
-    <q-btn class="bg-secondary text-white q-mb-md q-ml-sm" @click="downloadInvoice" label="Download PDF" />
-    <q-card v-if="isDataLoaded" class="invoice-container" ref="invoiceContainer">
+    <q-btn
+      flat
+      class="main-button text-white q-mb-md"
+      @click="printInvoice"
+      label="Print Invoice"
+    />
+    <q-btn
+      flat
+      class="secondary-button text-white q-mb-md q-ml-sm"
+      @click="downloadInvoice"
+      label="Download PDF"
+    />
+    <q-card class="invoice-container" ref="invoiceContainer">
       <q-card-section>
-        <div class="banner bg-primary text-white q-pa-md">
+        <div class="banner bg-blue-grey text-white q-pa-md">
           <div class="flex justify-between">
             <div class="text-left column justify-between">
               <div class="text-h6">COTTON CARE</div>
@@ -24,12 +34,41 @@
       </q-card-section>
       <q-card-section>
         <div class="row justify-between q-mb-lg">
-          <div class="col-6 text-left q-gutter-y-md">
+          <div class="col-6 text-left q-pl-md q-gutter-y-md">
+            <div class="q-mt-none">
+              <div class="row justify-center">
+                <div
+                  class="text-h6 text-weight-bolder"
+                  style="text-decoration: underline"
+                >
+                  {{ invoiceDetails.customer_name }}
+                </div>
+              </div>
+              <div class="row justify-center">
+                <div class="text-tiny text-uppercase">CUSTOMER/CLIENT NAME</div>
+              </div>
+            </div>
             <div>
-              <div class="text-h6 text-weight-bolder">Juan Dela Cruz</div>
-              <div class="text-p">
-                123 Sample Ave Sample Address 2<br />
-                Sample zip code
+              <div class="text-body1 text-weight-bold text-uppercase">
+                Contact Details
+              </div>
+              <div class="row">
+                <div class="col-4">
+                  <div class="text-p">Contact Person:</div>
+                  <div class="text-p">Contact No:</div>
+                  <div class="text-p">E-mail:</div>
+                </div>
+                <div class="col">
+                  <div class="text-p">
+                    {{ invoiceDetails.contact_person_name }}
+                  </div>
+                  <div class="text-p">
+                    {{ invoiceDetails.contact_person_no }}
+                  </div>
+                  <div class="text-p">
+                    {{ invoiceDetails.contact_person_email }}
+                  </div>
+                </div>
               </div>
             </div>
             <div>
@@ -55,7 +94,7 @@
             </div>
           </div>
           <div class="col-6 text-right q-gutter-y-md">
-            <div>
+            <div class="q-mt-none">
               <q-card flat class="add bg-blue-grey-11 q-pa-sm">
                 <div class="text-body1 text-weight-bold text-uppercase">
                   Collection Address
@@ -242,24 +281,21 @@
         </q-card-section>
       </q-card-section>
     </q-card>
-    <q-spinner v-else color="primary" size="40px" />
+    <!-- <q-spinner v-else color="primary" size="40px" /> -->
   </q-page>
 </template>
 
 <script setup>
-import { ref, onMounted, nextTick, computed } from "vue";
+import { ref, onMounted, computed } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import html2canvas from "html2canvas";
-import jsPDF from 'jspdf';
-import {
-  fetchInvoiceDetailsByInvoiceNo,
-  fetchTransactionsByInvoiceNo,
-} from "@/../supabase/api/invoices.js";
+import jsPDF from "jspdf";
+import { fetchDetailsByInvoiceNo } from "@/../supabase/api/invoices.js";
 
 const route = useRoute();
 const router = useRouter();
 
-const invoiceDetails = ref(null);
+const invoiceDetails = ref({});
 const transactions = ref([]);
 const isDataLoaded = ref(false);
 
@@ -276,35 +312,35 @@ const formatDate = (date) => {
 };
 
 const fetchData = async () => {
+  const invoiceNo = route.params.invoice_no;
+  if (!invoiceNo) {
+    console.error("No invoice number provided in the route params");
+    return;
+  }
   try {
-    const invoiceNo = route.params.invoice_no;
-
-    const [invoiceData, transactionsData] = await Promise.all([
-      fetchInvoiceDetailsByInvoiceNo(invoiceNo),
-      fetchTransactionsByInvoiceNo(invoiceNo),
-    ]);
-
-    invoiceDetails.value = invoiceData;
-    transactions.value = transactionsData.map((transaction) => ({
+    const {
+      invoice,
+      order,
+      customer,
+      transactions: fetchedTransactions,
+    } = await fetchDetailsByInvoiceNo(invoiceNo);
+    invoiceDetails.value = {
+      ...invoice,
+      ...order,
+      ...customer,
+    };
+    transactions.value = fetchedTransactions.map((transaction) => ({
       ...transaction,
-      quantity: transaction.quantity || 1,
+      price: Number(transaction.price),
+      quantity: 1, // Each transaction represents one item
     }));
-
-    formattedOrderDate.value = formatDate(invoiceDetails.value.order_date_time);
-    formattedInvoiceDate.value = formatDate(
-      invoiceDetails.value.invoice_date_time
-    );
-    formattedReadyBy.value = formatDate(invoiceDetails.value.ready_by);
-
+    console.log("Fetched Transactions:", transactions.value); // Debugging line
+    formattedOrderDate.value = formatDate(order.order_date_time);
+    formattedInvoiceDate.value = formatDate(invoice.invoice_date_time);
+    formattedReadyBy.value = formatDate(new Date()); // Example data, replace with actual data as needed
     isDataLoaded.value = true;
-
-    if (route.query.print) {
-      await nextTick();
-      printInvoice();
-    }
   } catch (error) {
-    console.error("Error fetching invoice details:", error);
-    router.push({ name: "Invoice Management" });
+    console.error("Error fetching invoice data:", error);
   }
 };
 
@@ -316,18 +352,24 @@ const combineTransactions = (transactions) => {
   transactions.forEach((transaction) => {
     const key = `${transaction.item_name}-${transaction.type}`;
     if (!combined[key]) {
-      combined[key] = { ...transaction, quantity: 0, subtotal: 0 };
+      combined[key] = {
+        ...transaction,
+        quantity: 0,
+        subtotal: 0,
+      };
     }
-    combined[key].quantity += transaction.quantity;
-    combined[key].subtotal += transaction.price * transaction.quantity;
+    combined[key].quantity += 1; // Count the number of items
+    combined[key].subtotal += transaction.price;
   });
 
   return Object.values(combined);
 };
 
-const processedTransactions = computed(() =>
-  combineTransactions(transactions.value)
-);
+const processedTransactions = computed(() => {
+  const result = combineTransactions(transactions.value);
+  console.log("Processed Transactions:", result); // Debugging line
+  return result;
+});
 
 const columns = [
   {
@@ -358,7 +400,10 @@ const columns = [
     name: "quantity",
     align: "right",
     label: "Quantity",
-    field: (row) => row.quantity,
+    field: (row) => {
+      console.log("Quantity Field:", row.quantity); // Debugging line
+      return row.quantity;
+    },
   },
   {
     name: "subtotal",
@@ -382,11 +427,11 @@ const outstandingPaid = ref(0);
 const balance = ref(0);
 
 const printInvoice = async () => {
-  const invoiceElement = document.querySelector('.invoice-container');
+  const invoiceElement = document.querySelector(".invoice-container");
   const canvas = await html2canvas(invoiceElement);
-  const imgData = canvas.toDataURL('image/png');
+  const imgData = canvas.toDataURL("image/png");
 
-  const imgWindow = window.open('', '_self');
+  const imgWindow = window.open("", "_self");
   imgWindow.document.write('<img src="' + imgData + '" />');
   imgWindow.document.close();
   imgWindow.focus();
@@ -395,32 +440,32 @@ const printInvoice = async () => {
 };
 
 const downloadInvoice = async () => {
-  const invoiceElement = document.querySelector('.invoice-container');
+  const invoiceElement = document.querySelector(".invoice-container");
   const canvas = await html2canvas(invoiceElement);
-  const imgData = canvas.toDataURL('image/png');
-  const pdf = new jsPDF('p', 'mm', 'a4');
+  const imgData = canvas.toDataURL("image/png");
+  const pdf = new jsPDF("p", "mm", "a4");
   const imgWidth = 210; // A4 width in mm
   const pageHeight = 297; // A4 height in mm
   const imgHeight = (canvas.height * imgWidth) / canvas.width;
   let heightLeft = imgHeight;
   let position = 0;
 
-  pdf.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight);
+  pdf.addImage(imgData, "PNG", 0, position, imgWidth, imgHeight);
   heightLeft -= pageHeight;
 
   while (heightLeft >= 0) {
     position = heightLeft - imgHeight;
     pdf.addPage();
-    pdf.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight);
+    pdf.addImage(imgData, "PNG", 0, position, imgWidth, imgHeight);
     heightLeft -= pageHeight;
   }
 
   const currentDateTime = new Date();
   const year = String(currentDateTime.getFullYear()).slice(-2);
-  const month = String(currentDateTime.getMonth() + 1).padStart(2, '0');
-  const day = String(currentDateTime.getDate()).padStart(2, '0');
-  const hours = String(currentDateTime.getHours()).padStart(2, '0');
-  const minutes = String(currentDateTime.getMinutes()).padStart(2, '0');
+  const month = String(currentDateTime.getMonth() + 1).padStart(2, "0");
+  const day = String(currentDateTime.getDate()).padStart(2, "0");
+  const hours = String(currentDateTime.getHours()).padStart(2, "0");
+  const minutes = String(currentDateTime.getMinutes()).padStart(2, "0");
   const fileName = `invoice-${year}${month}${day}${hours}${minutes}.pdf`;
 
   pdf.save(fileName);
@@ -431,7 +476,7 @@ const downloadInvoice = async () => {
 .invoice-container {
   max-width: 800px;
   margin: 0 auto;
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 0 0 rgba(0, 0, 0, 0);
 }
 .banner {
   background-color: #027be3;

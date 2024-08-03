@@ -1,12 +1,10 @@
 <template>
   <div class="invoice-management">
     <div class="q-pa-md">
-      <q-card>
+      <q-card flat>
         <q-tabs
           v-model="tab"
-          class="bg-grey-3 text-grey-10"
-          active-color="primary"
-          indicator-color="amber-8"
+          indicator-color="yellow-9"
           align="justify"
         >
           <q-tab name="all" label="All Transactions" />
@@ -14,7 +12,7 @@
           <q-tab name="generated" label="Generated Invoices" />
         </q-tabs>
 
-        <q-tab-panels v-model="tab" animated class="bg-primary text-white">
+        <q-tab-panels v-model="tab" animated>
           <q-tab-panel name="all">
             <h4>All Transactions</h4>
             <q-table
@@ -25,17 +23,28 @@
               separator="cell"
             >
               <template v-slot:body="props">
-                <q-tr :props="props" :class="{ highlighted: props.row.id === highlightedRow }">
-                  <q-td v-for="col in props.cols" :key="col.name" :props="props">
+                <q-tr
+                  :props="props"
+                  :class="{ highlighted: props.row.id === highlightedRow }"
+                >
+                  <q-td
+                    v-for="col in props.cols"
+                    :key="col.name"
+                    :props="props"
+                  >
                     <template v-if="col.name === 'actions'">
-                      <q-btn
+                      <q-btn flat
                         label="View"
-                        color="primary"
+                        class="main-button"
                         @click="goToInvoice(props.row)"
                       />
                     </template>
                     <template v-else>
-                      {{ typeof col.field === 'function' ? col.field(props.row) : props.row[col.field] }}
+                      {{
+                        typeof col.field === "function"
+                          ? col.field(props.row)
+                          : props.row[col.field]
+                      }}
                     </template>
                   </q-td>
                 </q-tr>
@@ -53,17 +62,30 @@
               separator="cell"
             >
               <template v-slot:body="props">
-                <q-tr :props="props" :class="{ highlighted: props.row.order_no === highlightedRow }">
-                  <q-td v-for="col in props.cols" :key="col.name" :props="props">
+                <q-tr
+                  :props="props"
+                  :class="{
+                    highlighted: props.row.order_no === highlightedRow,
+                  }"
+                >
+                  <q-td
+                    v-for="col in props.cols"
+                    :key="col.name"
+                    :props="props"
+                  >
                     <template v-if="col.name === 'actions'">
-                      <q-btn
-                        label="Generate Invoice"
-                        color="primary"
+                      <q-btn flat
+                        label=" View Order"
+                        class="main-button"
                         @click="viewOrder(props.row)"
                       />
                     </template>
                     <template v-else>
-                      {{ typeof col.field === 'function' ? col.field(props.row) : props.row[col.field] }}
+                      {{
+                        typeof col.field === "function"
+                          ? col.field(props.row)
+                          : props.row[col.field]
+                      }}
                     </template>
                   </q-td>
                 </q-tr>
@@ -81,23 +103,35 @@
               separator="cell"
             >
               <template v-slot:body="props">
-                <q-tr :props="props" :class="{ highlighted: props.row.invoice_no === highlightedRow }">
-                  <q-td v-for="col in props.cols" :key="col.name" :props="props">
+                <q-tr
+                  :props="props"
+                  :class="{
+                    highlighted: props.row.invoice_no === highlightedRow,
+                  }"
+                >
+                  <q-td
+                    v-for="col in props.cols"
+                    :key="col.name"
+                    :props="props"
+                  >
                     <template v-if="col.name === 'actions'">
-                      <q-btn
+                      <q-btn flat
                         label="View"
-                        color="primary"
+                        class="main-button"
                         @click="viewInvoice(props.row)"
                       />
-                      <q-btn
-                      class="q-ml-sm"
+                      <q-btn flat
+                        class="secondary-button q-ml-sm"
                         label="Print"
-                        color="secondary"
                         @click="printInvoice(props.row)"
                       />
                     </template>
                     <template v-else>
-                      {{ typeof col.field === 'function' ? col.field(props.row) : props.row[col.field] }}
+                      {{
+                        typeof col.field === "function"
+                          ? col.field(props.row)
+                          : props.row[col.field]
+                      }}
                     </template>
                   </q-td>
                 </q-tr>
@@ -109,26 +143,31 @@
     </div>
 
     <q-dialog v-model="isInvoiceDialogOpen" persistent>
-      <q-card class="dialogs" style="min-width: 70vw">
-        <q-card-section class="bg-primary">
-          <div class="text-h6 text-white">Invoice Details</div>
+      <q-card class="dialog" style="min-width: 70vw">
+        <q-card-section class="dialog-header">
+          <div class="text-body1 text-uppercase text-weight-bold">Invoice Details</div>
         </q-card-section>
         <q-card-section class="q-pa-none">
           <q-form>
-            <div class="bg-grey-4 rounded-borders row justify-center q-pa-md">
+            <div class="background2 row justify-center q-pa-md">
               <div class="column q-gutter-y-sm">
+                <div
+                  class="text-body1 text-uppercase text-weight-bold text-center q-pb-md"
+                >
+                  Order Details
+                </div>
                 <div class="row items-center justify-between q-gutter-x-md">
-                  <div class="text-p">Order No.:</div>
+                  <div class="text-p text-weight-bold">Order No.:</div>
                   <q-input
                     class="pending-input"
                     outlined
-                    v-model="selectedInvoice.order_no"
+                    v-model="selectedOrder.order_no"
                     readonly
                     dense
                   />
                 </div>
                 <div class="row items-center justify-between q-gutter-x-md">
-                  <div class="text-p">Date / Time:</div>
+                  <div class="text-p text-weight-bold">Date / Time:</div>
                   <q-input
                     class="pending-input"
                     outlined
@@ -138,18 +177,39 @@
                   />
                 </div>
                 <div class="row items-center justify-between q-gutter-x-md">
-                  <div class="text-p">Ready By:</div>
+                  <div class="text-p text-weight-bold">Ready By:</div>
                   <q-input
                     class="pending-input"
                     outlined
                     type="date"
-                    v-model="selectedInvoice.ready_by"
+                    v-model="selectedOrder.ready_by"
                     dense
                   />
                 </div>
               </div>
             </div>
-            <div class="q-pa-xl">
+            <div class="background1 q-pa-xl">
+              <div
+                class="text-body1 text-uppercase text-weight-bold text-center q-pb-md"
+              >
+                Transaction Details
+              </div>
+              <div
+                class="row q-pb-sm"
+              >
+                <div class="col-1">
+                  <div class="text-caption text-weight-bold">S. No.</div>
+                </div>
+                <div class="col-8">
+                  <div class="text-caption text-weight-bold">Item Name</div>
+                </div>
+                <div class="col-1">
+                  <div class="text-caption text-weight-bold">Tag No.</div>
+                </div>
+                <div class="col-2">
+                  <div class="text-caption text-weight-bold">Price</div>
+                </div>
+              </div>
               <div
                 class="row q-pb-sm"
                 v-for="(transaction, index) in selectedTransactions"
@@ -165,68 +225,123 @@
                   <q-input v-model="transaction.tag_no" dense readonly />
                 </div>
                 <div class="col-2">
-                  <q-input outlined v-model="transaction.price" dense />
+                  <q-input outlined readonly v-model="transaction.price" dense />
                 </div>
               </div>
             </div>
-            <div class="bg-grey-4 rounded-borders row justify-center q-pa-md">
+            <div class="background2 q-pa-xl row justify-center">
               <div class="column q-gutter-y-sm">
+                <div
+                  class="text-body1 text-uppercase text-weight-bold text-center q-pb-md"
+                >
+                  Customer Details
+                </div>
                 <div class="row items-center justify-between q-gutter-x-md">
-                  <div class="text-p">Customer Name:</div>
+                  <div class="text-p text-weight-bold">Customer Name:</div>
                   <q-input
                     class="pending-customer"
                     outlined
-                    v-model="customer.customer_name"
+                    v-model="selectedOrder.contact_person"
                     readonly
                     dense
                   />
                 </div>
                 <div class="row items-center justify-between q-gutter-x-md">
-                  <div class="text-p">Contact No:</div>
+                  <div class="text-p text-weight-bold">Contact No:</div>
                   <q-input
                     class="pending-customer"
                     outlined
-                    v-model="customer.contact_no"
+                    v-model="selectedOrder.contact_person_no"
                     readonly
                     dense
                   />
                 </div>
                 <div class="row items-center justify-between q-gutter-x-md">
-                  <div class="text-p">Delivery Address:</div>
+                  <div class="text-p text-weight-bold">Delivery Address:</div>
                   <q-input
                     class="pending-customer"
                     outlined
-                    v-model="customer.del_address"
+                    v-model="selectedOrder.del_address"
                     readonly
                     dense
                   />
                 </div>
                 <div class="row items-center justify-between q-gutter-x-md">
-                  <div class="text-p">Remarks:</div>
+                  <div class="text-p text-weight-bold">Remarks:</div>
                   <q-input
                     type="textarea"
                     class="pending-customer"
                     outlined
-                    v-model="customer.remarks"
+                    v-model="selectedOrder.remarks"
                     readonly
                     dense
                   />
                 </div>
               </div>
             </div>
-          </q-form>
+            <div class="background1 q-pa-xl column justify-center">
+              <div
+                class="text-body1 text-uppercase text-weight-bold text-center q-pb-md"
+              >
+                Instructions
+              </div>
+              <div class="q-gutter-y-md q-px-xl">
+                <div
+                class="row q-gutter-y-sm"
+                v-for="instruction in selectedInstructions"
+                :key="instruction.id"
+              >
+                <div class="col">
+                  <i class="fa-solid fa-caret-right q-pr-sm"></i>
+                  {{ instruction.description }}
+                  <div class="q-mt-sm">
+                    <q-chip
+                      v-if="instruction.admin"
+                      outline
+                      class="chip-admin q-mr-sm text-weight-bold"
+                      >Admin</q-chip
+                    >
+                    <q-chip
+                      v-if="instruction.tagger"
+                      outline
+                      class="chip-tagger q-mr-sm text-weight-bold"
+                      >Tagger</q-chip
+                    >
+                    <q-chip
+                      v-if="instruction.packer"
+                      outline
+                      class="chip-packer q-mr-sm text-weight-bold"
+                      >Packer</q-chip
+                    >
+                    <q-chip
+                      v-if="instruction.collection"
+                      outline
+                      class="chip-collection q-mr-sm text-weight-bold"
+                      >Collection</q-chip
+                    >
+                    <q-chip v-if="instruction.delivery" 
+                     outline
+                     class="chip-delivery text-weight-bold"
+                      >Delivery</q-chip
+                    >
+                  </div>
+                </div>
+              </div>
+              </div>
+            </div>
+          </q-form> 
         </q-card-section>
         <q-card-actions align="right">
           <q-btn
-            push
+            flat
             label="Close"
-            color="negative"
+            class="negative-button"
             @click="isInvoiceDialogOpen = false"
           />
           <q-btn
-            push
+            flat
+            class="main-button"
             label="Generate Invoice"
-            color="primary"
             @click="generateInvoice"
           />
         </q-card-actions>
@@ -239,14 +354,15 @@
 import { ref, onMounted, nextTick } from "vue";
 import { useRouter } from "vue-router";
 import {
+  fetchAllOrders,
   fetchAllInvoices,
-  fetchInvoiceDetails,
-  fetchTransactionsByInvoiceId,
-  fetchTransactionsByInvoiceNo,
-  getNextInvoiceNo,
-  updateInvoiceStatusAndDateById,
-  fetchInvoiceDetailsByInvoiceNo,
-  fetchCustomerDetailsByInvoiceId,
+  fetchOrderDetails,
+  fetchTransactionsByOrderId,
+  updateOrderStatusAndDateById,
+  fetchCustomerDetailsByOrderId,
+  insertInvoiceByOrderId,
+  fetchInvoiceByOrderId,
+  fetchInstructionsByOrderId,
 } from "@/../supabase/api/invoices.js";
 
 const formatDateTime = (dateString) =>
@@ -267,20 +383,6 @@ const formatDate = (dateString) =>
   });
 
 const columns = [
-  {
-    name: "invoice_no",
-    align: "left",
-    label: "Invoice No",
-    field: "invoice_no",
-    sortable: true,
-  },
-  {
-    name: "invoice_date_time",
-    align: "left",
-    label: "Invoice Timestamp",
-    field: (row) => formatDateTime(row.order_date_time),
-    sortable: true,
-  },
   {
     name: "order_no",
     align: "left",
@@ -342,14 +444,15 @@ const generatedColumns = [
     name: "invoice_no",
     align: "left",
     label: "Invoice No",
-    field: "invoice_no",
+    field: (row) =>
+      row.invoice_no ? row.invoice_no.toString().padStart(8, "0") : null,
     sortable: true,
   },
   {
     name: "invoice_date_time",
     align: "left",
     label: "Invoice Timestamp",
-    field: (row) => formatDateTime(row.order_date_time),
+    field: (row) => formatDateTime(row.invoice_date_time),
     sortable: true,
   },
   {
@@ -373,8 +476,9 @@ const tab = ref("all");
 const invoices = ref([]);
 const pendingInvoices = ref([]);
 const generatedInvoices = ref([]);
-const selectedInvoice = ref({});
+const selectedOrder = ref({});
 const selectedTransactions = ref([]);
+const selectedInstructions = ref([]);
 const formattedOrderDateTime = ref("");
 const isInvoiceDialogOpen = ref(false);
 const customer = ref({});
@@ -383,13 +487,26 @@ const highlightedRow = ref(null);
 
 async function fetchData() {
   try {
-    const allInvoices = await fetchAllInvoices();
-    invoices.value = allInvoices;
+    const [allOrders, allInvoices] = await Promise.all([
+      fetchAllOrders(),
+      fetchAllInvoices(),
+    ]);
+
+    const combinedData = allOrders.map((order) => {
+      const invoice = allInvoices.find((inv) => inv.order_id === order.id);
+      return {
+        ...order,
+        invoice_no: invoice ? invoice.invoice_no : null,
+        invoice_date_time: invoice ? invoice.invoice_date_time : null,
+      };
+    });
+
+    invoices.value = combinedData;
     pendingInvoices.value = invoices.value.filter(
-      (invoice) => invoice.status === "Pending"
+      (order) => order.status === "Pending"
     );
     generatedInvoices.value = invoices.value.filter(
-      (invoice) => invoice.status === "Done"
+      (order) => order.status === "Done"
     );
   } catch (error) {
     console.error("Error fetching data:", error);
@@ -398,45 +515,40 @@ async function fetchData() {
 
 async function viewOrder(row) {
   try {
-    const invoiceDetails = await fetchInvoiceDetails(row.order_no);
-    const transactions = await fetchTransactionsByInvoiceId(invoiceDetails.id);
-    const customerDetails = await fetchCustomerDetailsByInvoiceId(
-      invoiceDetails.id
-    );
-    selectedInvoice.value = invoiceDetails;
+    const orderDetails = await fetchOrderDetails(row.id);
+    const transactions = await fetchTransactionsByOrderId(orderDetails.id);
+    const instructions = await fetchInstructionsByOrderId(orderDetails.id);
+    selectedOrder.value = orderDetails;
     selectedTransactions.value = transactions.map((transaction, index) => ({
       ...transaction,
       serial_no: index + 1,
     }));
-    customer.value = customerDetails;
-    formattedOrderDateTime.value = formatDateTime(
-      invoiceDetails.order_date_time
-    );
+    selectedInstructions.value = instructions;
+    formattedOrderDateTime.value = formatDateTime(orderDetails.order_date_time);
     isInvoiceDialogOpen.value = true;
   } catch (error) {
-    console.error("Error fetching invoice details:", error);
+    console.error("Error fetching order details:", error);
   }
 }
 
 async function generateInvoice() {
   try {
-    const nextInvoiceNo = await getNextInvoiceNo();
-    selectedInvoice.value.invoice_no = nextInvoiceNo;
-    selectedInvoice.value.status = "Done";
-    selectedInvoice.value.invoice_date_time = new Date()
-      .toISOString()
-      .slice(0, 19)
-      .replace("T", " ");
-    await updateInvoiceStatusAndDateById(
-      selectedInvoice.value.id,
-      selectedInvoice.value.status,
-      selectedInvoice.value.invoice_date_time,
-      selectedInvoice.value.invoice_no
+    selectedOrder.value.status = "Done";
+
+    await updateOrderStatusAndDateById(
+      selectedOrder.value.id,
+      selectedOrder.value.status
     );
+
+    await insertInvoiceByOrderId(selectedOrder.value.id);
+
+    // Fetch the newly created invoice details
+    await fetchInvoiceByOrderId(selectedOrder.value.id);
+
     isInvoiceDialogOpen.value = false;
     fetchData();
   } catch (error) {
-    console.error("Error generating invoice:", error);
+    console.error("Error generating invoice:", error.message);
   }
 }
 
@@ -452,21 +564,25 @@ function printInvoice(row) {
   const url = router.resolve({
     name: "View Invoice",
     params: { invoice_no: row.invoice_no },
-    query: { print: true }
+    query: { print: true },
   }).href;
   window.open(url, "_blank");
 }
 
 async function goToInvoice(row) {
-  const invoiceId = row.id;
+  const orderId = row.id;
   if (row.status === "Pending") {
     tab.value = "pendings";
     await nextTick();
-    highlightedRow.value = pendingInvoices.value.find(invoice => invoice.id === invoiceId)?.order_no;
+    highlightedRow.value = pendingInvoices.value.find(
+      (order) => order.id === orderId
+    )?.order_no;
   } else if (row.status === "Done") {
     tab.value = "generated";
     await nextTick();
-    highlightedRow.value = generatedInvoices.value.find(invoice => invoice.id === invoiceId)?.invoice_no;
+    highlightedRow.value = generatedInvoices.value.find(
+      (order) => order.id === orderId
+    )?.invoice_no;
   }
   await nextTick(() => {
     setTimeout(() => {

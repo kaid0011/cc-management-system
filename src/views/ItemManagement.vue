@@ -1,26 +1,33 @@
 <template>
   <div class="items-management">
-
     <!-- Add Item Button -->
     <q-btn
-      color="primary"
-      class="q-mb-lg"
+      flat
+      class="main-button q-mb-lg"
       @click="showAddItemDialog = true"
       label="Add Item"
     />
 
     <!-- Items Table -->
-    <q-table :rows="items" :columns="columns" row-key="id" separator="cell">
+    <q-table
+      class="table"
+      :rows="items"
+      :columns="columns"
+      row-key="id"
+      separator="cell"
+    >
       <template v-slot:body-cell-actions="props">
         <q-td :props="props" class="q-gutter-x-md">
           <q-btn
+            flat
             label="Update"
-            color="primary"
+            class="main-button"
             @click="openUpdateDialog(props.row)"
           />
           <q-btn
+            flat
             label="Delete"
-            color="negative"
+            class="negative-button"
             @click="openDeleteDialog(props.row)"
           />
         </q-td>
@@ -34,9 +41,9 @@
       transition-show="slide-down"
       transition-hide="slide-up"
     >
-      <q-card style="width: 500px">
-        <q-card-section class="bg-primary text-white">
-          <div class="text-h6">Add New Item</div>
+      <q-card style="width: 500px" class="dialog">
+        <q-card-section class="dialog-header">
+          <div class="text-body1 text-uppercase text-weight-bold">Add New Item</div>
         </q-card-section>
         <q-card-section>
           <!-- Add Item Form -->
@@ -83,12 +90,11 @@
               outlined
             ></q-input>
             <q-card-actions align="right">
-              <q-btn
-                color="secondary"
+              <q-btn flat class="negative-button"
                 @click="showAddItemDialog = false"
                 label="Cancel"
               ></q-btn>
-              <q-btn color="primary" type="submit" label="Add Item"></q-btn>
+              <q-btn flat type="submit" class="main-button" label="Add Item"></q-btn>
             </q-card-actions>
           </q-form>
         </q-card-section>
@@ -103,8 +109,8 @@
       transition-hide="slide-up"
     >
       <q-card style="width: 500px">
-        <q-card-section class="bg-primary text-white">
-          <div class="text-h6">Update Item</div>
+        <q-card-section class="dialog-header">
+          <div class="text-body1 text-uppercase text-weight-bold">Update Item</div>
         </q-card-section>
         <q-card-section>
           <!-- Update Item Form -->
@@ -151,12 +157,11 @@
               outlined
             ></q-input>
             <q-card-actions align="right">
-              <q-btn color="primary" type="submit" label="Update Item"></q-btn>
-              <q-btn
-                color="secondary"
+              <q-btn flat class="negative-button"
                 @click="showUpdateItemDialog = false"
                 label="Cancel"
               ></q-btn>
+              <q-btn flat class="main-button" type="submit" label="Update Item"></q-btn>
             </q-card-actions>
           </q-form>
         </q-card-section>
@@ -171,18 +176,17 @@
       transition-hide="slide-up"
     >
       <q-card style="width: 500px">
-        <q-card-section class="bg-primary text-white">
-          <div class="text-h6">Delete Item</div>
+        <q-card-section class="dialog-header">
+          <div class="text-body1 text-uppercase text-weight-bold">Delete Item</div>
         </q-card-section>
         <q-card-section>
           <p>Are you sure you want to delete this item?</p>
           <q-card-actions align="right">
-            <q-btn color="negative" label="Yes" @click="deleteItem"></q-btn>
-            <q-btn
-              color="secondary"
+            <q-btn flat class="negative-button"
               label="No"
               @click="showDeleteItemDialog = false"
             ></q-btn>
+            <q-btn flat class="main-button" label="Yes" @click="deleteItem"></q-btn>
           </q-card-actions>
         </q-card-section>
       </q-card>
@@ -283,8 +287,8 @@ onMounted(async () => {
 
 // Helper function to set empty inputs to null
 const cleanItem = (item) => {
-  Object.keys(item).forEach(key => {
-    if (item[key] === '') {
+  Object.keys(item).forEach((key) => {
+    if (item[key] === "") {
       item[key] = null;
     }
   });
@@ -320,7 +324,6 @@ const addItem = async () => {
     $q.notify({ type: "negative", message: "Failed to add item" });
   }
 };
-
 
 // Function to open update item dialog with selected item data
 const openUpdateDialog = (item) => {
