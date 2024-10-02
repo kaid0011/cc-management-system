@@ -39,15 +39,7 @@ export const updateItems = async (item) => {
   try {
     const { data, error } = await supabase
       .from('item_list')
-      .update({
-        name: item.name,
-        category: item.category,
-        sub_category: item.sub_category,
-        laundry_price: item.laundry_price,
-        dryclean_price: item.dryclean_price,
-        pressing_price: item.pressing_price,
-        others_price: item.others_price,
-      })
+      .update(item)
       .eq('id', item.id);
     if (error) {
       console.error('Error updating item:', error.message);
@@ -59,6 +51,7 @@ export const updateItems = async (item) => {
     return null;
   }
 };
+
 
 // Delete an item from the database
 export const deleteItems = async (itemId) => {

@@ -128,9 +128,12 @@ function navigate(path) {
 const links1 = [
   { icon: "dashboard", text: "Dashboard", path: "/" },
   { icon: "inventory", text: "Item Management", path: "/items" },
-  { icon: "receipt_long", text: "Invoice Management", path: "/invoices" },
-  { icon: "person", text: "Customer Management", path: "/customers" },
+  { icon: "local_mall", text: "Order Management", path: "/orders" },
+  { icon: "receipt", text: "Invoice Management", path: "/invoices" },
+  { icon: "people", text: "Customer Management", path: "/customers" },
+  { icon: "local_shipping", text: "Driver Management", path: "/drivers" },
 ];
+
 
 const links2 = [{ icon: "logout", text: "Log Out", path: "/" }];
 

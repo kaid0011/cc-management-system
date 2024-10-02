@@ -287,13 +287,11 @@
 
 <script setup>
 import { ref, onMounted, computed } from "vue";
-import { useRoute, useRouter } from "vue-router";
+import { useRoute } from "vue-router";
 import html2canvas from "html2canvas";
-import jsPDF from "jspdf";
 import { fetchDetailsByInvoiceNo } from "@/../supabase/api/invoices.js";
 
-const route = useRoute();
-const router = useRouter();
+const route = useRoute(); 
 
 const invoiceDetails = ref({});
 const transactions = ref([]);

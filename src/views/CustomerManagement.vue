@@ -8,10 +8,22 @@
       label="Add Customer"
     />
 
+    <!-- Search Field and Button -->
+    <div class="q-mb-lg search-container">
+      <q-input
+        v-model="searchQuery"
+        placeholder="Search customers"
+        outlined
+        dense
+        clearable
+        @clear="clearSearch"
+      />
+    </div>
+
     <!-- Customers Table -->
     <q-table
       class="table"
-      :rows="customers"
+      :rows="filteredCustomers"
       :columns="customerColumns"
       row-key="id"
       separator="cell"
@@ -131,7 +143,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from "vue";
+import { ref, computed, onMounted } from "vue";
 import { useRouter } from "vue-router";
 import {
   fetchAllCustomers,
@@ -139,10 +151,12 @@ import {
   updateCustomers,
   deleteCustomers,
 } from "@/../supabase/api/customers.js";
+import { createContactPerson } from "@/../supabase/api/contact_persons.js";
 
 const router = useRouter();
 
 const customers = ref([]);
+const searchQuery = ref(""); // Added search query state
 const customerColumns = [
   { name: "name", label: "Name", field: "name", align: "left", sortable: true },
   { name: "address", label: "Address", field: "address", align: "left", sortable: true },
@@ -185,6 +199,18 @@ const fetchAllCustomersData = async () => {
   }
 };
 
+// Computed property for filtered customers
+const filteredCustomers = computed(() => {
+  if (!searchQuery.value) {
+    return customers.value;
+  }
+  return customers.value.filter(customer =>
+    Object.values(customer).some(val =>
+      String(val).toLowerCase().includes(searchQuery.value.toLowerCase())
+    )
+  );
+});
+
 const viewCustomer = (customer) => {
   const url = router.resolve({ name: "View Customer", params: { id: customer.id } }).href;
   window.open(url, "_blank");
@@ -202,13 +228,33 @@ const openDeleteDialog = (customer) => {
 
 const addCustomer = async () => {
   try {
-    await createCustomer(newCustomer.value);
-    await fetchAllCustomersData();
-    showAddCustomerDialog.value = false;
+    // Call createCustomer and expect a response with customer data
+    const result = await createCustomer(newCustomer.value);
+
+    if (result && result.id) {
+      // Prepare contact person data including customer ID
+      const contactPersonData = {
+        ...newCustomer.value, // Spread customer fields
+        customer_id: result.id // Add customer ID
+      };
+
+      console.log("Creating contact person with data:", contactPersonData); // Debugging line
+
+      // Insert the contact person
+      const contactResult = await createContactPerson(contactPersonData);
+      console.log("Contact person creation result:", contactResult); // Debugging line
+
+      // Refresh the customer list
+      await fetchAllCustomersData();
+      showAddCustomerDialog.value = false;
+    } else {
+      console.error("Failed to obtain customer ID from createCustomer response.");
+    }
   } catch (error) {
     console.error("Error adding customer:", error);
   }
 };
+
 
 const updateCustomer = async () => {
   try {
@@ -229,6 +275,10 @@ const deleteCustomer = async () => {
     console.error("Error deleting customer:", error);
   }
 };
+
+const clearSearch = () => {
+  searchQuery.value = '';
+};
 </script>
 
 <style scoped>
@@ -243,5 +293,11 @@ const deleteCustomer = async () => {
 .q-card-section.bg-primary {
   background-color: #3f51b5;
   color: #ffffff;
+}
+
+.search-container {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: 10px;
 }
 </style>

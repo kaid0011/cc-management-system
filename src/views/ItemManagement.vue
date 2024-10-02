@@ -8,10 +8,22 @@
       label="Add Item"
     />
 
+    <!-- Search Field -->
+    <div class="q-mb-lg search-container">
+      <q-input
+        v-model="searchQuery"
+        placeholder="Search items"
+        outlined
+        dense
+        clearable
+        @clear="clearSearch"
+      />
+    </div>
+
     <!-- Items Table -->
     <q-table
       class="table"
-      :rows="items"
+      :rows="filteredItems"
       :columns="columns"
       row-key="id"
       separator="cell"
@@ -89,8 +101,17 @@
               label="Others Price"
               outlined
             ></q-input>
+            <q-select
+              v-model="newItem.unit"
+              label="Unit"
+              outlined
+              :options="units"
+              required
+            ></q-select>
             <q-card-actions align="right">
-              <q-btn flat class="negative-button"
+              <q-btn
+                flat
+                class="negative-button"
                 @click="showAddItemDialog = false"
                 label="Cancel"
               ></q-btn>
@@ -108,7 +129,7 @@
       transition-show="slide-down"
       transition-hide="slide-up"
     >
-      <q-card style="width: 500px">
+      <q-card style="width: 500px" class="dialog">
         <q-card-section class="dialog-header">
           <div class="text-body1 text-uppercase text-weight-bold">Update Item</div>
         </q-card-section>
@@ -156,8 +177,17 @@
               label="Others Price"
               outlined
             ></q-input>
+            <q-select
+              v-model="selectedItem.unit"
+              label="Unit"
+              outlined
+              :options="units"
+              required
+            ></q-select>
             <q-card-actions align="right">
-              <q-btn flat class="negative-button"
+              <q-btn
+                flat
+                class="negative-button"
                 @click="showUpdateItemDialog = false"
                 label="Cancel"
               ></q-btn>
@@ -182,7 +212,9 @@
         <q-card-section>
           <p>Are you sure you want to delete this item?</p>
           <q-card-actions align="right">
-            <q-btn flat class="negative-button"
+            <q-btn
+              flat
+              class="negative-button"
               label="No"
               @click="showDeleteItemDialog = false"
             ></q-btn>
@@ -195,7 +227,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from "vue";
+import { ref, computed, onMounted } from "vue";
 import { useQuasar } from "quasar";
 import {
   fetchAllItems,
@@ -203,6 +235,9 @@ import {
   updateItems,
   deleteItems,
 } from "@/../supabase/api/item_list.js";
+
+// Define available units
+const units = ["/pc", "/kg", "/cm", "/ft", "/sqft"];
 
 // Define columns for q-table
 const columns = [
@@ -224,28 +259,35 @@ const columns = [
     name: "laundry_price",
     label: "Laundry",
     align: "left",
-    field: "laundry_price",
+    field: (row) => (row.laundry_price ? `$ ${row.laundry_price.toFixed(2)}` : ""),
     sortable: true,
   },
   {
     name: "dryclean_price",
     label: "Dry Clean",
     align: "left",
-    field: "dryclean_price",
+    field: (row) => (row.dryclean_price ? `$ ${row.dryclean_price.toFixed(2)}` : ""),
     sortable: true,
   },
   {
     name: "pressing_price",
     label: "Pressing Only",
     align: "left",
-    field: "pressing_price",
+    field: (row) => (row.pressing_price ? `$ ${row.pressing_price.toFixed(2)}` : ""),
     sortable: true,
   },
   {
     name: "others_price",
     label: "Others",
     align: "left",
-    field: "others_price",
+    field: (row) => (row.others_price ? `$ ${row.others_price.toFixed(2)}` : ""),
+    sortable: true,
+  },
+  {
+    name: "unit",
+    label: "Unit",
+    align: "left",
+    field: "unit",
     sortable: true,
   },
   { name: "actions", label: "Actions", align: "left", field: "actions" },
@@ -253,6 +295,7 @@ const columns = [
 
 // Define reactive variables
 const items = ref([]);
+const searchQuery = ref(""); // Added search query state
 const showAddItemDialog = ref(false);
 const showUpdateItemDialog = ref(false);
 const showDeleteItemDialog = ref(false);
@@ -264,6 +307,7 @@ const newItem = ref({
   dryclean_price: null,
   pressing_price: null,
   others_price: null,
+  unit: "", // Added unit field
 });
 const selectedItem = ref({
   id: null,
@@ -274,11 +318,24 @@ const selectedItem = ref({
   dryclean_price: 0,
   pressing_price: 0,
   others_price: 0,
+  unit: "", // Added unit field
 });
 const itemToDelete = ref(null);
 
 // Quasar utilities
 const $q = useQuasar();
+
+// Computed property for filtered items
+const filteredItems = computed(() => {
+  if (!searchQuery.value) {
+    return items.value;
+  }
+  return items.value.filter((item) =>
+    Object.values(item).some((val) =>
+      String(val).toLowerCase().includes(searchQuery.value.toLowerCase())
+    )
+  );
+});
 
 // Fetch items on component mount
 onMounted(async () => {
@@ -365,6 +422,11 @@ const deleteItem = async () => {
     $q.notify({ type: "negative", message: "Failed to delete item" });
   }
 };
+
+// Function to clear the search query
+const clearSearch = () => {
+  searchQuery.value = '';
+};
 </script>
 
 <style scoped>
@@ -379,5 +441,11 @@ const deleteItem = async () => {
 .q-card-section.bg-primary {
   background-color: #3f51b5;
   color: #ffffff;
+}
+
+.search-container {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: 10px;
 }
 </style>

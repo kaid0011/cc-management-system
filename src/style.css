@@ -307,9 +307,111 @@ background-color: var(--background-c);
 }
 
 .q-field__inner {
-  background-color: rgba(0,0,0,0) !important;
+  background-color: var(--table-bg) !important;
 }
 
 .invoice-container {
   color: #000000 !important;
+}
+
+.drivers-management {
+  padding: 20px;
+}
+
+.items-management {
+  padding: 20px;
+}
+
+.order-create-container {
+  padding: 2vh;
+}
+
+.order-create-list-area {
+  height: 68vh;
+  background-color: #e9e9e9;
+  overflow-y: auto;
+}
+
+.order-create-customer-area,
+.order-create-action-area,
+.order-create-list-header,
+.order-create-dialog-cards,
+.order-create-dialog-customer,
+.order-create-dialog-instructions {
+  background-color: #e9e9e9;
+}
+
+.order-create-action-area {
+  margin-top: 2vh;
+  min-height: 12vh;
+}
+
+.order-create-scrollable-list {
+  height: 100%;
+  overflow-y: auto;
+}
+
+.order-create-item-image {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.order-create-q-tab-panels.order-create-q-panel-parent,
+.order-create-q-tabs {
+  background-color: #cfa739;
+}
+
+.order-create-tab-list {
+  background-color: #164461 !important;
+}
+
+.order-create-list-buttons {
+  width: 100%;
+  height: 200px;
+  background-color: #ffffff;
+}
+
+.order-create-counter-buttons,
+.order-create-list-counter-buttons {
+  background-color: #b29852;
+}
+
+.order-create-list-quantity {
+  border-width: 1.5px;
+  border-color: #8a8a8a;
+  border-style: solid;
+}
+
+.order-create-scrollable-table .q-td,
+.order-create-wrap-text {
+  word-wrap: break-word;
+  white-space: normal;
+}
+
+.order-create-upload-input {
+  min-width: 200px;
+}
+
+.order-create-fixed-width,
+.order-create-name-column,
+.order-create-price-column,
+.order-create-quantity-column,
+.order-create-actions-column {
+  width: auto;
+}
+
+.order-create-wrap-text {
+  overflow-wrap: break-word;
+}
+
+/* Hide spin buttons in number inputs */
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+input[type="number"] {
+  -moz-appearance: textfield;
 }

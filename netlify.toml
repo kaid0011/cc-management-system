@@ -1,0 +1,5 @@
+[[redirects]]
+    from = "https://ccms.netlify.app"
+    to = "https://ccms.cc-systems.net"
+    status = 301
+    force = true
