@@ -1,4 +1,4 @@
-import { createApp } from "vue";
+import { createApp } from "/vue";
 import { Quasar, Dialog, Notify } from "quasar";
 import router from "./router";
 import print from 'vue3-print-nb'
