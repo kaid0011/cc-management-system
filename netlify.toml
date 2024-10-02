@@ -1,5 +1,5 @@
 [[redirects]]
-    from = "https://ccms.netlify.app"
+    from = "https://cc-ccms.netlify.app"
     to = "https://ccms.cc-systems.net"
     status = 301
-    force = true
+    force = truegit ad
